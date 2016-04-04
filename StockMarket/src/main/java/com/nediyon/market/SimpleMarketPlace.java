@@ -210,7 +210,8 @@ public class SimpleMarketPlace implements EntryAddedListener<String, StockOrder>
 						//Process order
 						processStockOrder(orderToProcess);
 					}
-				} catch (InterruptedException e) {
+				} catch (Exception e) {
+					//Manage if any problem occurs on queue
 				}
 		      }
 		  } );
@@ -250,6 +251,12 @@ public class SimpleMarketPlace implements EntryAddedListener<String, StockOrder>
 	public void shotdown(){
 		if(messageExecutor!=null)
 			messageExecutor.shutdownNow();	
+		if(stockOrders!=null)
+			stockOrders.destroy();
+		if(stockTransactions!=null)
+			stockTransactions.destroy();
+		if(stockPrices!=null)
+			stockPrices.destroy();
 		if(hzInstance!=null)
 			hzInstance.shutdown();
 	}
