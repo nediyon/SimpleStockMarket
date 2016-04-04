@@ -230,17 +230,18 @@ public class SimpleMarketPlace implements EntryAddedListener<String, StockOrder>
 		stockTransactions.put(idTrx, orderToProcess, dif, TimeUnit.MILLISECONDS);
 		logger.info("Stock " + orderToProcess.getStockSymbol() + " Order Transaction  Opeartion Type: "+ orderToProcess.getOperationType().toString() + ", Price : "+orderToProcess.getPrice() + ", Quantity : "+ orderToProcess.getSharesQuantity());
 		logger.info("Time to live in IMDG : " + dif + " miliseconds");
+		
+		//When a stock order is processed and added to transaction map, then we update the ticker price on the stock
+		Double tickerPrice = orderToProcess.getPrice();
+		String symbol = orderToProcess.getStockSymbol();
+		StockTickerPriceEntryProcessor stockTickerPriceEntryProcessor = new StockTickerPriceEntryProcessor(tickerPrice);
+		stockPrices.executeOnKey(symbol, stockTickerPriceEntryProcessor);
+		
 	}
 
 	@Override
 	public void entryAdded(EntryEvent<String, StockOrder> event) {
-		//When a stock order is processed and added to transaction map, then we update the ticker price on the stock
-		if(event.getValue() !=null){
-			String symbol = event.getValue().getStockSymbol();
-			Double tickerPrice = event.getValue().getPrice();
-			StockTickerPriceEntryProcessor stockTickerPriceEntryProcessor = new StockTickerPriceEntryProcessor(tickerPrice);
-			stockPrices.executeOnKey(symbol, stockTickerPriceEntryProcessor);
-		}
+		//do something when a new transaction is added to the map
 	}
 	
 	@Override
